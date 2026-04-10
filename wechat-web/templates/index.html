@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信公众号文章排版发布工具</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="header-content">
+                <h1>📝 微信公众号文章排版发布工具</h1>
+                <p class="subtitle">支持文档上传 · 多风格排版 · 一键发布</p>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+                <span id="theme-icon">🌙</span>
+            </button>
+        </header>
+
+        <!-- 主要内容 -->
+        <main class="main-content">
+            <!-- 左侧：上传和设置 -->
+            <div class="left-panel">
+                <!-- 文件上传区 -->
+                <section class="card upload-section">
+                    <h2 class="card-title">📤 上传文档</h2>
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-icon">📄</div>
+                        <p class="upload-text">拖拽文件到此处，或点击选择</p>
+                        <p class="upload-hint">支持 .docx, .md, .txt 格式</p>
+                        <input type="file" id="file-input" accept=".docx,.md,.txt" hidden>
+                    </div>
+                    <div class="upload-progress" id="upload-progress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <span class="progress-text" id="progress-text">上传中...</span>
+                    </div>
+                </section>
+
+                <!-- 文章内容编辑 -->
+                <section class="card editor-section">
+                    <h2 class="card-title">✏️ 文章内容</h2>
+                    <div class="editor-toolbar">
+                        <input type="text" id="article-title" placeholder="请输入文章标题..." class="title-input">
+                    </div>
+                    <textarea id="article-content" placeholder="在此输入文章内容...
+
+支持 Markdown 语法：
+- # 标题
+- **粗体** *斜体*
+- - 无序列表
+- 1. 有序列表
+- > 引用
+- ``` 代码块 ```"></textarea>
+                </section>
+
+                <!-- 排版风格选择 -->
+                <section class="card style-section">
+                    <h2 class="card-title">🎨 排版风格</h2>
+                    <div class="style-grid" id="style-grid">
+                        <label class="style-option">
+                            <input type="radio" name="style" value="simple" checked>
+                            <div class="style-card">
+                                <span class="style-icon">📄</span>
+                                <span class="style-name">简约风格</span>
+                                <span class="style-desc">适合通知公告</span>
+                            </div>
+                        </label>
+                        <label class="style-option">
+                            <input type="radio" name="style" value="business">
+                            <div class="style-card">
+                                <span class="style-icon">💼</span>
+                                <span class="style-name">商务风格</span>
+                                <span class="style-desc">适合行业报告</span>
+                            </div>
+                        </label>
+                        <label class="style-option">
+                            <input type="radio" name="style" value="literary">
+                            <div class="style-card">
+                                <span class="style-icon">📜</span>
+                                <span class="style-name">文艺风格</span>
+                                <span class="style-desc">适合散文故事</span>
+                            </div>
+                        </label>
+                        <label class="style-option">
+                            <input type="radio" name="style" value="tech">
+                            <div class="style-card">
+                                <span class="style-icon">💻</span>
+                                <span class="style-name">科技风格</span>
+                                <span class="style-desc">适合技术文档</span>
+                            </div>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- 操作按钮 -->
+                <section class="card action-section">
+                    <button class="btn btn-primary btn-large" onclick="formatArticle()">
+                        <span>✨</span> 预览排版效果
+                    </button>
+                    <button class="btn btn-secondary" onclick="showConfigModal()">
+                        <span>⚙️</span> 凭证配置
+                    </button>
+                </section>
+            </div>
+
+            <!-- 右侧：操作日志 -->
+            <div class="right-panel">
+                <section class="card log-section">
+                    <h2 class="card-title">📋 操作日志</h2>
+                    <div class="log-container" id="log-container">
+                        <div class="log-entry log-info">
+                            <span class="log-time">--:--:--</span>
+                            <span class="log-message">等待操作...</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-small btn-text" onclick="clearLogs()">清空日志</button>
+                </section>
+
+                <!-- 帮助说明 -->
+                <section class="card help-section">
+                    <h2 class="card-title">❓ 使用帮助</h2>
+                    <div class="help-content">
+                        <details>
+                            <summary>如何上传文档？</summary>
+                            <p>直接将文件拖拽到上传区域，或点击区域选择文件。支持 Word (.docx)、Markdown (.md)、纯文本 (.txt) 格式。</p>
+                        </details>
+                        <details>
+                            <summary>如何编辑文章？</summary>
+                            <p>上传文档后，内容会自动填充到编辑器中。也可以直接手动输入或粘贴内容。</p>
+                        </details>
+                        <details>
+                            <summary>如何发布到公众号？</summary>
+                            <p>1. 配置微信公众号凭证<br>2. 编辑文章内容<br>3. 点击「预览排版效果」<br>4. 在预览页点击「发布」</p>
+                        </details>
+                        <details>
+                            <summary>发布后在哪里查看？</summary>
+                            <p>文章会保存到公众号草稿箱，登录微信公众平台 (mp.weixin.qq.com) 即可查看和发布。</p>
+                        </details>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- 底部 -->
+        <footer class="footer">
+            <p>基于 Flask + 微信公众号 API 构建 | 使用前请先配置凭证</p>
+        </footer>
+    </div>
+
+    <!-- 凭证配置模态框 -->
+    <div class="modal" id="config-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚙️ 凭证配置</h3>
+                <button class="modal-close" onclick="closeConfigModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="config-appid">AppID</label>
+                    <input type="text" id="config-appid" placeholder="请输入微信公众号 AppID">
+                </div>
+                <div class="form-group">
+                    <label for="config-appsecret">AppSecret</label>
+                    <input type="password" id="config-appsecret" placeholder="请输入微信公众号 AppSecret">
+                </div>
+                <div class="form-hint">
+                    💡 登录微信公众平台 → 设置与开发 → 基本配置 获取凭证
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConfigModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveConfig()">保存配置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 提示 -->
+    <div class="toast" id="toast"></div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

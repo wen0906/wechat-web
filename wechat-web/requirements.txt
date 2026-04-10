@@ -1,0 +1,9 @@
+# Flask Web 框架
+Flask>=2.0.0
+Werkzeug>=2.0.0
+
+# 文档解析
+python-docx>=0.8.11
+
+# 图片处理（生成默认封面）
+Pillow>=9.0.0
